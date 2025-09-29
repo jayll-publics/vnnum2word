@@ -16,3 +16,5 @@
 # MA 02110-1301 USA
 
 from .main import WordConverter
+
+__all__ = ['WordConverter']
