@@ -1,5 +1,6 @@
 
 from __future__ import unicode_literals
+from decimal import Decimal
 
 to_19 = (u'không', u'một', u'hai', u'ba', u'bốn', u'năm', u'sáu',
          u'bảy', u'tám', u'chín', u'mười', u'mười một', u'mười hai',
@@ -68,16 +69,32 @@ class WordConverter(object):
                     ret = ret + ' ' + self.vietnam_number(r)
                 return ret
 
-    def __call__(self, number):
-        number = '%.2f' % number
-        the_list = str(number).split('.')
-        if the_list[1][-1] == '0':
-            the_list[1] = the_list[1][:-1]
-        start_word = self.vietnam_number(int(the_list[0]))
+    def __call__(self, number: int | float | Decimal):
+        # Parse number into integer and fractional parts without forcing 2 decimals
+        # Support int, float, or Decimal inputs only
+        text = str(number)
+
+        parts = text.split('.')
+
+        # Integer part
+        start_word = self.vietnam_number(int(parts[0]))
         final_result = start_word
-        if len(the_list) > 1 and int(the_list[1]) > 0:
-            end_word = self.vietnam_number(int(the_list[1]))
-            final_result = final_result + ' phẩy ' + end_word
+
+        # Fractional part handling
+        if len(parts) > 1:
+            frac_raw = parts[1]
+            # Trim trailing zeros to avoid reading them when not meaningful
+            frac = frac_raw.rstrip('0')
+            if frac:
+                if len(frac) <= 2:
+                    # Read as a 1- or 2-digit number using standard rules
+                    end_word = self.vietnam_number(int(frac))
+                else:
+                    # Read each digit individually when more than two digits
+                    digit_words = [to_19[int(ch)] for ch in frac]
+                    end_word = ' '.join(digit_words)
+                final_result = final_result + ' phẩy ' + end_word
+
         return final_result
 
     def to_cardinal(self, number):

@@ -21,6 +21,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from unittest import TestCase
 from vnnum2word import WordConverter
+from decimal import Decimal
 
 
 class WordConverterTest(TestCase):
@@ -151,4 +152,43 @@ class WordConverterTest(TestCase):
         )
         self.assertEqual(
             WordConverter()(19.00), "mười chín"
+        )
+
+    def test_fraction_more_than_two_digits_digitwise(self):
+        self.assertEqual(
+            WordConverter()(Decimal('12.123')), "mười hai phẩy một hai ba"
+        )
+        self.assertEqual(
+            WordConverter()(Decimal('12.556')), "mười hai phẩy năm năm sáu"
+        )
+        self.assertEqual(
+            WordConverter()(Decimal('1000.2135')), "một nghìn phẩy hai một ba năm"
+        )
+
+    def test_fraction_trailing_zeros_trim(self):
+        self.assertEqual(
+            WordConverter()(12.1200), "mười hai phẩy mười hai"
+        )
+        self.assertEqual(
+            WordConverter()(12.100), "mười hai phẩy một"
+        )
+        # existing behavior: if fractional becomes 0 -> drop fractional part
+        self.assertEqual(
+            WordConverter()(19.00), "mười chín"
+        )
+
+    def test_input_types(self):
+        self.assertEqual(
+            WordConverter()(Decimal('12.123')), "mười hai phẩy một hai ba"
+        )
+        self.assertEqual(
+            WordConverter()(12.123), "mười hai phẩy một hai ba"
+        )
+
+    def test_one_two_decimal_digits_unchanged(self):
+        self.assertEqual(
+            WordConverter()(12.55), "mười hai phẩy năm mươi lăm"
+        )
+        self.assertEqual(
+            WordConverter()(12.5), "mười hai phẩy năm"
         )
