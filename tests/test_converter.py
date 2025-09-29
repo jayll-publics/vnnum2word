@@ -138,3 +138,17 @@ class WordConverterTest(TestCase):
             WordConverter()(1000101017),
             "một tỷ một trăm lẻ một nghìn lẻ mười bảy"
         )
+    
+    def test_2_decimal_number(self):
+        self.assertEqual(
+            WordConverter()(1000.11), "một nghìn phẩy mười một"
+        )
+        self.assertEqual(
+            WordConverter()(13.21), "mười ba phẩy hai mươi mốt"
+        )
+        self.assertEqual(
+            WordConverter()(19.5), "mười chín phẩy năm"
+        )
+        self.assertEqual(
+            WordConverter()(19.00), "mười chín"
+        )
