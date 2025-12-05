@@ -15,6 +15,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 # MA 02110-1301 USA
 
-from .main import WordConverter
+from .main import convert_number, convert_string
 
-__all__ = ['WordConverter']
+__all__ = ['convert_number', 'convert_string']
